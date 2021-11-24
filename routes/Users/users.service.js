@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const pool = require('../../config/DatabaseConfig');
-const UsersQuery = require('./users.query');
+import bcrypt, { hash } from 'bcrypt';
+import pool from '../../config/DatabaseConfig';
+import UsersQuery from './users.query';
 
-module.exports = {
+export default {
     insertUsers: async (userInfo) => {
         const con = await pool.getConnection();
         const query = UsersQuery.insertUsers(userInfo);
@@ -63,7 +63,17 @@ module.exports = {
         const con = await pool.getConnection();
         const query = UsersQuery.getUserDetail(userInfo);
 
-        const [[result]] = con.query(query);
+        const [[result]] = await con.query(query);
+
+        const createHashPassword = async (userInfo) => {
+            const hashPassword = bcrypt.hashSync(userInfo.password, 10);
+            // result = { ...result, hashPassword };
+            result['hashPassword'] = hashPassword;
+        };
+
+        createHashPassword(userInfo);
+
+        console.log(result);
 
         con.release();
 
@@ -72,13 +82,15 @@ module.exports = {
             result.hashPassword,
         );
 
-        if (result?.hashPassword)
-            return Promise.reject('유저 정보를 찾을 수 없습니다');
+        console.log(`Salt: ${match}`);
+
+        if (!result?.hashPassword)
+            throw new Error('유저 정보를 찾을 수 없습니다');
 
         if (match) {
-            return { id: result.id };
+            return { id: result.username };
         } else {
-            return Promise.reject('아이디 혹은 비밀번호를 확인해주세요');
+            throw new Error('아이디 혹은 비밀번호를 확인해주세요');
         }
     },
 };

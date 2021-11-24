@@ -1,17 +1,18 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const cors = require('cors');
-const session = require('express-session');
-const redis = require('redis');
-const connectRedis = require('connect-redis');
+import createError from 'http-errors';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import cors from 'cors';
+import session from 'express-session';
+import redis from 'redis';
+import connectRedis from 'connect-redis';
 
-const indexRouter = require('./routes/index');
+import indexRouter from './routes/index';
+import usersRouter from './routes/users';
 
-const redisClient = require('./db/RedisClient');
-const sessConfig = require('./config/SessionConfig');
+import redisClient from './db/RedisClient';
+import sessConfig from './config/SessionConfig';
 
 const app = express();
 const RedisStore = connectRedis(session);
@@ -48,6 +49,7 @@ app.use(
 );
 
 app.use('/', indexRouter);
+app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

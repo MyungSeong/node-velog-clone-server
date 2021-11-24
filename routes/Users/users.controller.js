@@ -1,8 +1,10 @@
-var express = require('express');
-var router = express.Router();
-const UserService = require('./users.service');
+import express from 'express';
 
-router.get('/', async function (req, res, next) {
+import UserService from './users.service';
+
+const router = express.Router();
+
+router.get('/', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserList();
 
@@ -11,15 +13,15 @@ router.get('/', async function (req, res, next) {
             result: resultData,
             message: 'Get User List Success',
         });
-    } catch (err) {
+    } catch (error) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: error.toString(),
         });
     }
 });
 
-router.get('/:username', async function (req, res, next) {
+router.get('/:username', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserDetail(req.params);
 
@@ -28,15 +30,15 @@ router.get('/:username', async function (req, res, next) {
             result: resultData,
             message: 'Get User Deatil Success',
         });
-    } catch (err) {
+    } catch (error) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: error.toString(),
         });
     }
 });
 
-router.post('/', async function (req, res, next) {
+router.post('/', async (req, res, next) => {
     try {
         const resultData = await UserService.insertUsers(req.body);
 
@@ -45,15 +47,15 @@ router.post('/', async function (req, res, next) {
             result: resultData,
             message: 'User Insert Success',
         });
-    } catch (err) {
+    } catch (error) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: error.toString(),
         });
     }
 });
 
-router.put('/', async function (req, res, next) {
+router.put('/', async (req, res, next) => {
     try {
         const resultData = await UserService.updateUser(req.body);
 
@@ -62,15 +64,15 @@ router.put('/', async function (req, res, next) {
             result: resultData,
             message: 'User Update Success',
         });
-    } catch (err) {
+    } catch (error) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: error.toString(),
         });
     }
 });
 
-router.delete('/', async function (req, res, next) {
+router.delete('/', async (req, res, next) => {
     try {
         const resultData = await UserService.deleteUser(req.body);
 
@@ -79,12 +81,28 @@ router.delete('/', async function (req, res, next) {
             result: resultData,
             message: 'Delete User Success',
         });
-    } catch (err) {
+    } catch (error) {
         res.status(400).send({
             status: 400,
-            message: err,
+            message: error.toString(),
         });
     }
 });
 
-module.exports = router;
+router.post('/login', async (req, res, next) => {
+    try {
+        const resultData = await UserService.loginUser(req.body);
+
+        return res.status(200).send({
+            result: resultData,
+            message: 'Login Success',
+        });
+    } catch (error) {
+        res.status(400).send({
+            status: 400,
+            message: error.toString(),
+        });
+    }
+});
+
+export default router;

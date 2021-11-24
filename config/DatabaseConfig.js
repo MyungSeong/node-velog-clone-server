@@ -1,5 +1,5 @@
-const dotenv = require('dotenv');
-const { createPool } = require('mysql2/promise');
+import dotenv from 'dotenv';
+import { createPool } from 'mysql2/promise';
 
 dotenv.config();
 
@@ -13,4 +13,4 @@ const config = {
 
 const pool = createPool(config);
 
-module.exports = pool;
+export default pool;

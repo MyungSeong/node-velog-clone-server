@@ -3,7 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "nodemon ./bin/www",
+        "start": "nodemon ./bin/www --exec babel-node",
         "deploy": "yarn install --frozen-lockfile && pm2 start deploy.json"
     },
     "dependencies": {
@@ -22,6 +22,12 @@
         "redis": "^3.1.2"
     },
     "devDependencies": {
+        "@babel/cli": "^7.16.0",
+        "@babel/core": "^7.16.0",
+        "@babel/node": "^7.16.0",
+        "@babel/polyfill": "^7.12.1",
+        "@babel/preset-env": "^7.16.4",
+        "babel-loader": "^8.2.3",
         "nodemon": "^2.0.15"
     }
 }

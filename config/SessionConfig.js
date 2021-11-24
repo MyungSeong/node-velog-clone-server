@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -8,4 +8,4 @@ const sessConfig = {
     SESS_MAXAGE: parseInt(process.env.SESS_MAXAGE) * 60000,
 };
 
-module.exports = sessConfig;
+export default sessConfig;
