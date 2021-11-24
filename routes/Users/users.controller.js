@@ -9,12 +9,12 @@ router.get('/', async function (req, res, next) {
         return res.status(200).send({
             status: 200,
             result: resultData,
-            message: 'Get User List Success'
+            message: 'Get User List Success',
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err
+            message: err,
         });
     }
 });
@@ -26,12 +26,12 @@ router.get('/:username', async function (req, res, next) {
         return res.status(200).send({
             status: 200,
             result: resultData,
-            message: 'Get User Deatil Success'
+            message: 'Get User Deatil Success',
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err
+            message: err,
         });
     }
 });
@@ -43,12 +43,12 @@ router.post('/', async function (req, res, next) {
         return res.status(200).send({
             status: 200,
             result: resultData,
-            message: 'User Insert Success'
+            message: 'User Insert Success',
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err
+            message: err,
         });
     }
 });
@@ -60,12 +60,12 @@ router.put('/', async function (req, res, next) {
         return res.status(200).send({
             status: 200,
             result: resultData,
-            message: 'User Update Success'
+            message: 'User Update Success',
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err
+            message: err,
         });
     }
 });
@@ -77,12 +77,12 @@ router.delete('/', async function (req, res, next) {
         return res.status(200).send({
             status: 200,
             result: resultData,
-            message: 'Delete User Success'
+            message: 'Delete User Success',
         });
     } catch (err) {
         res.status(400).send({
             status: 400,
-            message: err
+            message: err,
         });
     }
 });

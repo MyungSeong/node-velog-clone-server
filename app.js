@@ -41,7 +41,7 @@ app.use(
         cookie: {
             maxAge: sessConfig.SESS_MAXAGE,
             sameSite: false,
-            httpOnly: false,
+            httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
         },
     }),

@@ -1,9 +1,6 @@
 module.exports = {
     insertUsers: (userInfo) => {
-        const {
-            username,
-            password
-        } = userInfo;
+        const { username, password } = userInfo;
 
         return `
             INSERT INTO users
@@ -16,7 +13,7 @@ module.exports = {
                 '${username}',
                 '${password}'
             );
-        `
+        `;
     },
     getUserList: () => {
         return `
@@ -39,11 +36,7 @@ module.exports = {
         `;
     },
     updateUser: (userInfo) => {
-        const {
-            id,
-            username,
-            password
-        } = userInfo;
+        const { id, username, password } = userInfo;
 
         return `
             UPDATE users
@@ -52,18 +45,16 @@ module.exports = {
                 password = '${password}'
             WHERE
                 id = '${id}';
-        `
+        `;
     },
     deleteUser: (userInfo) => {
-        const {
-            username
-        } = userInfo;
+        const { username } = userInfo;
 
         return `
             DELETE 
             FROM users
             WHERE
                 username = '${username}';
-        `
+        `;
     },
-}
+};
