@@ -1,17 +1,27 @@
-module.exports = {
+export default {
     insertUsers: (userInfo) => {
-        const { username, password } = userInfo;
+        console.log('🚀 ~ file: users.query.js ~ line 6 ~ userInfo', userInfo);
 
         return `
-            INSERT INTO users
+            INSERT INTO t_user
             (
-                username,
-                password
+                user_id,
+                user_nm,
+                user_desc,
+                user_login_id,
+                user_login_pw,
+                created_at,
+                modified_at
             )
             VALUES
             (
-                '${username}',
-                '${password}'
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                UNIX_TIMESTAMP(),
+                UNIX_TIMESTAMP()
             );
         `;
     },
@@ -20,23 +30,27 @@ module.exports = {
             SELECT 
                    * 
             FROM
-                 users;
+                 t_user;
         `;
     },
     getUserDetail: (userInfo) => {
-        const { username } = userInfo;
+        console.log('🚀 ~ file: users.query.js ~ line 41 ~ userInfo', userInfo);
+        const { id } = userInfo;
+        console.log('🚀 ~ file: users.query.js ~ line 43 ~ userInfo', userInfo);
 
         return `
             SELECT 
                     *
             FROM
-                    users
+                    t_user
             WHERE
-                    username = '${username}';
+                    user_login_id = '${id}';
         `;
     },
     updateUser: (userInfo) => {
+        console.log('🚀 ~ file: users.query.js ~ line 55 ~ userInfo', userInfo);
         const { id, username, password } = userInfo;
+        console.log('🚀 ~ file: users.query.js ~ line 57 ~ userInfo', userInfo);
 
         return `
             UPDATE users
@@ -48,7 +62,9 @@ module.exports = {
         `;
     },
     deleteUser: (userInfo) => {
+        console.log('🚀 ~ file: users.query.js ~ line 69 ~ userInfo', userInfo);
         const { username } = userInfo;
+        console.log('🚀 ~ file: users.query.js ~ line 71 ~ userInfo', userInfo);
 
         return `
             DELETE 
