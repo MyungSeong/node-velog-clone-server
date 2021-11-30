@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { hashSync } from 'bcrypt';
+import { hashSync, compareSync } from 'bcrypt';
 
 import pool from '../../config/DatabaseConfig';
 import UsersQuery from './users.query';
@@ -8,23 +8,14 @@ export default {
     insertUsers: async (userInfo) => {
         const con = await pool.getConnection();
 
-        const {
-            uid = v4(),
-            userName,
-            desc,
-            id,
-            password = hashSync(userInfo.password, 10),
-        } = userInfo;
-
-        console.log(hashSync(userInfo.password, 10));
-        console.log(hashSync(password, 10));
+        const { userName, desc, id, password } = userInfo;
 
         const query = UsersQuery.insertUsers([
-            uid,
+            v4(),
             userName,
             desc,
             id,
-            password,
+            hashSync(password, 10),
         ]);
 
         const [{ affectedRows: result }] = await con.query(query);
@@ -85,14 +76,7 @@ export default {
 
         const [[result]] = await con.query(query);
 
-        console.log(result);
-
-        const match = await bcrypt.compare(
-            userInfo.user_login_pw,
-            result.user_login_pw,
-        );
-
-        console.log(`Salt: ${match}`);
+        const match = compareSync(userInfo.password, result.user_login_pw);
 
         con.release();
 

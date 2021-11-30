@@ -104,34 +104,33 @@ router.delete('/', async (req, res, next) => {
 
 router.post('/login', async (req, res, next) => {
     try {
-        await redisClient.get(`sess:${req.session.uuid}`, (err, data) => {
+        const resultData = await UserService.loginUser(req.body);
+
+        if (req.session.uuid) {
+            return res.status(200).send({
+                status: 200,
+                message: 'Already Logged in',
+            });
+        } else {
+            req.session.uuid = resultData.user_id;
+        }
+
+        /*await redisClient.get(`sess:${resultData.user_id}`, (err, data) => {
             if (err) throw new Error(err.message);
 
             if (data) {
-                console.log(
-                    '🚀 ~ file: users.controller.js ~ line 111 ~ awaitredisClient.get ~ data',
-                    data,
-                );
-
-                return res.status(202).send({
-                    status: 202,
+                return res.status(200).send({
+                    status: 200,
                     message: 'Already Logged in',
                 });
             }
-        });
+        });*/
 
-        const resultData = await UserService.loginUser(req.body);
-
-        req.session.uuid = resultData?.user_id;
-        console.log(
-            '🚀 ~ file: users.controller.js ~ line 126 ~ router.post ~ session',
-            session,
-        );
-
-        await redisClient.set(
-            JSON.stringify(req.session.uuid),
+        /*await redisClient.hSet(
+            'velog:session',
+            resultData.user_id,
             resultData.user_login_id,
-        );
+        );*/
 
         logger.info(`POST /login @req: ${JSON.stringify(req.headers)}`);
 
@@ -153,7 +152,6 @@ router.post('/login', async (req, res, next) => {
 router.post('/logout', async (req, res, next) => {
     try {
         req.session.destroy();
-        req.session = null;
 
         return res.status(200).send({
             message: 'Logout Success',

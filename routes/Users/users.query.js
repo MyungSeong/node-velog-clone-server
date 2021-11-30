@@ -1,6 +1,6 @@
 export default {
     insertUsers: (userInfo) => {
-        console.log('🚀 ~ file: users.query.js ~ line 6 ~ userInfo', userInfo);
+        const [uuid, userName, desc, id, password] = userInfo;
 
         return `
             INSERT INTO t_user
@@ -15,11 +15,11 @@ export default {
             )
             VALUES
             (
-                ?,
-                ?,
-                ?,
-                ?,
-                ?,
+                '${uuid}',
+                '${userName}',
+                '${desc}',
+                '${id}',
+                '${password}',
                 UNIX_TIMESTAMP(),
                 UNIX_TIMESTAMP()
             );
@@ -34,9 +34,7 @@ export default {
         `;
     },
     getUserDetail: (userInfo) => {
-        console.log('🚀 ~ file: users.query.js ~ line 41 ~ userInfo', userInfo);
         const { id } = userInfo;
-        console.log('🚀 ~ file: users.query.js ~ line 43 ~ userInfo', userInfo);
 
         return `
             SELECT 
@@ -48,9 +46,7 @@ export default {
         `;
     },
     updateUser: (userInfo) => {
-        console.log('🚀 ~ file: users.query.js ~ line 55 ~ userInfo', userInfo);
         const { id, username, password } = userInfo;
-        console.log('🚀 ~ file: users.query.js ~ line 57 ~ userInfo', userInfo);
 
         return `
             UPDATE users
@@ -62,9 +58,7 @@ export default {
         `;
     },
     deleteUser: (userInfo) => {
-        console.log('🚀 ~ file: users.query.js ~ line 69 ~ userInfo', userInfo);
         const { username } = userInfo;
-        console.log('🚀 ~ file: users.query.js ~ line 71 ~ userInfo', userInfo);
 
         return `
             DELETE 

@@ -35,7 +35,6 @@ app.use(
 app.use(
     session({
         store: new RedisStore({ client: redisClient }),
-        name: sessConfig.SESS_NAME,
         resave: false,
         saveUninitialized: false,
         secret: sessConfig.SESS_SECRET,
