@@ -24,7 +24,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:username', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserDetail(req.params);
 
@@ -110,22 +110,22 @@ router.post('/login', async (req, res, next) => {
 
         const isLoggedIn = await redisClient.hGet(
             'velog:session',
-            resultData.user_id,
+            resultData.uuid,
         );
 
         if (isLoggedIn) throw new Error('Already logged in');
 
         const token = JWTAuthorization.createToken(
             {
-                uuid: resultData.user_id,
-                id: resultData.user_login_id,
+                uuid: resultData.uuid,
+                id: resultData.id,
             },
             '30min',
         );
 
         const success = await redisClient.hSet(
             'velog:session',
-            resultData.user_id,
+            resultData.uuid,
             token,
         );
 
@@ -156,14 +156,13 @@ router.delete('/logout', async (req, res, next) => {
         // req.session.destroy();
         const success = await redisClient.hDel(
             'velog:session',
-            resultData.user_id,
+            resultData.uuid,
         );
 
         if (!success) throw new Error('세션 데이터가 존재하지 않습니다');
 
         return res.status(200).json({
             status: 200,
-            result: resultData,
             message: 'Logout Success',
         });
     } catch (error) {

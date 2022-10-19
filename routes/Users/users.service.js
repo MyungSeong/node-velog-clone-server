@@ -53,7 +53,14 @@ export default {
 
         con.release();
 
-        return result;
+        return {
+            uuid: result.user_id,
+            id: result.user_login_id,
+            name: result.user_nm,
+            desc: result.user_desc,
+            createdAt: result.created_at,
+            modifiedAt: result.modified_at,
+        };
     },
     updateUser: async (userInfo) => {
         const con = await pool.getConnection();
@@ -90,7 +97,10 @@ export default {
             const match = compareSync(userInfo.password, result.user_login_pw);
 
             if (match) {
-                return result;
+                return {
+                    uuid: result.user_id,
+                    id: result.user_login_id,
+                };
             } else {
                 throw new Error('아이디 혹은 비밀번호를 확인해주세요');
             }
@@ -115,7 +125,9 @@ export default {
             const [[result]] = await con.query(query);
 
             if (userInfo.id === result.user_login_id) {
-                return result;
+                return {
+                    uuid: result.user_id,
+                };
             } else {
                 return false;
             }
