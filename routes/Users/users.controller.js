@@ -28,7 +28,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-router.get('/:id', async (req, res, next) => {
+router.get('/:username', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserDetail(req.params);
 
@@ -135,7 +135,7 @@ router.post('/login', async (req, res, next) => {
                     uuid: resultData.uuid,
                     id: resultData.id,
                 },
-                '30min',
+                '30m',
             );
 
             const success = await redisClient.hSet(

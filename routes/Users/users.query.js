@@ -34,7 +34,7 @@ export default {
         `;
     },
     getUserDetail: (userInfo) => {
-        const { id } = userInfo;
+        const { id, username } = userInfo;
 
         return `
             SELECT 
@@ -42,19 +42,21 @@ export default {
             FROM
                     t_user
             WHERE
-                    user_login_id = '${id}';
+                    user_login_id = '${id}' OR
+                    user_nm = '${username}';
         `;
     },
     updateUser: (userInfo) => {
-        const { id, username, password } = userInfo;
+        const { username, desc, password } = userInfo;
 
         return `
-            UPDATE users
+            UPDATE t_users
             SET
-                username = '${username}',
+                user_nm = '${username}',
+                user_desc = '${desc}',
                 password = '${password}'
             WHERE
-                id = '${id}';
+                user_nm = '${username}';
         `;
     },
     deleteUser: (userInfo) => {
@@ -62,9 +64,9 @@ export default {
 
         return `
             DELETE 
-            FROM users
+            FROM t_users
             WHERE
-                username = '${username}';
+                user_nm = '${username}';
         `;
     },
 };
