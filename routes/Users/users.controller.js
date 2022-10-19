@@ -1,7 +1,7 @@
 import express from 'express';
 
-import logger from '../../config/Logger';
 import redisClient from '../../db/RedisClient';
+import JWTAuthorization from '../../utils/JSONWebTokenAuthorization';
 
 import UserService from './users.service';
 
@@ -11,15 +11,13 @@ router.get('/', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserList();
 
-        return res.status(200).send({
+        return res.status(200).json({
             status: 200,
             result: resultData,
             message: 'Get User List Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -30,15 +28,13 @@ router.get('/:username', async (req, res, next) => {
     try {
         const resultData = await UserService.getUserDetail(req.params);
 
-        return res.status(200).send({
+        return res.status(200).json({
             status: 200,
             result: resultData,
-            message: 'Get User Deatil Success',
+            message: 'Get User Detail Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -49,15 +45,13 @@ router.post('/', async (req, res, next) => {
     try {
         const resultData = await UserService.insertUsers(req.body);
 
-        return res.status(200).send({
-            status: 200,
+        return res.status(201).json({
+            status: 201,
             result: resultData,
             message: 'User Insert Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -68,15 +62,13 @@ router.put('/', async (req, res, next) => {
     try {
         const resultData = await UserService.updateUser(req.body);
 
-        return res.status(200).send({
-            status: 200,
+        return res.status(201).json({
+            status: 201,
             result: resultData,
             message: 'User Update Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -87,15 +79,13 @@ router.delete('/', async (req, res, next) => {
     try {
         const resultData = await UserService.deleteUser(req.body);
 
-        return res.status(200).send({
+        return res.status(200).json({
             status: 200,
             result: resultData,
             message: 'Delete User Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -106,60 +96,78 @@ router.post('/login', async (req, res, next) => {
     try {
         const resultData = await UserService.loginUser(req.body);
 
-        if (req.session.uuid) {
-            return res.status(200).send({
+        /* if (req.session.uid) {
+            return res.status(200).json({
                 status: 200,
                 message: 'Already Logged in',
             });
         } else {
-            req.session.uuid = resultData.user_id;
-        }
+            req.session.uid = resultData.user_id;
 
-        /*await redisClient.get(`sess:${resultData.user_id}`, (err, data) => {
-            if (err) throw new Error(err.message);
+            console.log(req.session.uid);
+            console.log(resultData);
+        } */
 
-            if (data) {
-                return res.status(200).send({
-                    status: 200,
-                    message: 'Already Logged in',
-                });
-            }
-        });*/
-
-        /*await redisClient.hSet(
+        const isLoggedIn = await redisClient.hGet(
             'velog:session',
             resultData.user_id,
-            resultData.user_login_id,
-        );*/
+        );
 
-        logger.info(`POST /login @req: ${JSON.stringify(req.headers)}`);
+        if (isLoggedIn) throw new Error('Already logged in');
 
-        return res.status(200).send({
+        const token = JWTAuthorization.createToken(
+            {
+                uuid: resultData.user_id,
+                id: resultData.user_login_id,
+            },
+            '30min',
+        );
+
+        const success = await redisClient.hSet(
+            'velog:session',
+            resultData.user_id,
+            token,
+        );
+
+        if (success) {
+            redisClient.expireAt(
+                'velog:session',
+                parseInt(+new Date() / 1000) + 30 * 60,
+            );
+        }
+
+        return res.status(200).json({
             status: 200,
             result: resultData,
             message: 'Login Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });
     }
 });
 
-router.post('/logout', async (req, res, next) => {
+router.delete('/logout', async (req, res, next) => {
     try {
-        req.session.destroy();
+        const resultData = await UserService.logoutUser(req.body);
 
-        return res.status(200).send({
+        // req.session.destroy();
+        const success = await redisClient.hDel(
+            'velog:session',
+            resultData.user_id,
+        );
+
+        if (!success) throw new Error('세션 데이터가 존재하지 않습니다');
+
+        return res.status(200).json({
+            status: 200,
+            result: resultData,
             message: 'Logout Success',
         });
     } catch (error) {
-        logger.error(error.message);
-
-        res.status(400).send({
+        res.status(400).json({
             status: 400,
             message: error.message,
         });

@@ -7,9 +7,11 @@ import customLogger from './config/Logger';
 import cors from 'cors';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
+import helmet from 'helmet';
 
 import indexRouter from './routes/index';
-import usersRouter from './routes/users';
+import usersRouter from './routes/Users';
+import postsRouter from './routes/Posts';
 
 import redisClient from './db/RedisClient';
 import sessConfig from './config/SessionConfig';
@@ -34,11 +36,13 @@ app.use(
 );
 app.use(
     session({
+        name: 'sessionId',
         store: new RedisStore({ client: redisClient }),
         resave: false,
         saveUninitialized: false,
         secret: sessConfig.SESS_SECRET,
         cookie: {
+            expire: new Date(Date.now() + 500 * 60 * 60),
             maxAge: 24 * 60 * 60,
             sameSite: false,
             httpOnly: true,
@@ -46,14 +50,21 @@ app.use(
         },
     }),
 );
+app.use(helmet());
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/posts', postsRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
     next(createError(404));
 });
+
+//catch unCaughtException
+/* process.on('uncaughtException', (err) => {
+    console.error('uncaughtException (Node is alive)', err);
+}); */
 
 // error handler
 app.use((err, req, res, next) => {
@@ -61,11 +72,12 @@ app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    if (res.headersSent) {
+    /* if (res.headersSent) {
         return next(err);
-    }
+    } */
 
     customLogger.error(err.message);
+    customLogger.debug(err);
 
     res.status(err.status || 500);
     res.render('error', {
