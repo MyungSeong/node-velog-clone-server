@@ -63,23 +63,16 @@ app.use((req, res, next) => {
     next(createError(404));
 });
 
-//catch unCaughtException
-/* process.on('uncaughtException', (err) => {
-    console.error('uncaughtException (Node is alive)', err);
-}); */
-
 // error handler
 app.use((err, req, res, next) => {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    if (err) {
+        customLogger.error(ANSIColorLog.green(err.message));
 
-    /* if (res.headersSent) {
-        return next(err);
-    } */
-
-    customLogger.error(ANSIColorLog.dyeRed(err.message));
-    //customLogger.debug(err);
+        if (process.env.NODE_ENV !== 'production') {
+            customLogger.error(ANSIColorLog.dyeRed(err.message));
+            //customLogger.debug(err);
+        }
+    }
 
     res.status(err.status || 500);
     res.render('error', {
