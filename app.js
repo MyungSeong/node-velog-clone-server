@@ -16,6 +16,8 @@ import postsRouter from './routes/Posts';
 import redisClient from './db/RedisClient';
 import sessConfig from './config/SessionConfig';
 
+import * as ANSIColorLog from './utils/ANSIColorLog';
+
 const app = express();
 const RedisStore = connectRedis(session);
 
@@ -76,8 +78,8 @@ app.use((err, req, res, next) => {
         return next(err);
     } */
 
-    customLogger.error(err.message);
-    customLogger.debug(err);
+    customLogger.error(ANSIColorLog.dyeRed(err.message));
+    //customLogger.debug(err);
 
     res.status(err.status || 500);
     res.render('error', {
