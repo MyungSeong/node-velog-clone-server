@@ -3,7 +3,6 @@ import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import customLogger from './config/Logger';
 import cors from 'cors';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -13,6 +12,7 @@ import indexRouter from './routes/index';
 import usersRouter from './routes/Users';
 import postsRouter from './routes/Posts';
 
+import customLogger from './config/Logger';
 import redisClient from './db/RedisClient';
 import sessConfig from './config/SessionConfig';
 
@@ -66,18 +66,20 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res, next) => {
     if (err) {
-        customLogger.error(ANSIColorLog.green(err.message));
+        customLogger.error(`[GLOBAL ERROR] ${err.message}`);
 
         if (process.env.NODE_ENV !== 'production') {
-            customLogger.error(ANSIColorLog.dyeRed(err.message));
-            //customLogger.debug(err);
+            console.log('====================================');
+            console.log(ANSIColorLog.dyeRed(err.message));
+            console.log('====================================');
+
+            //console.log(err);
         }
     }
 
     res.status(err.status || 500);
-    res.render('error', {
-        code: err.code,
-        status: err.status,
+    res.json({
+        status: err.status || 500,
         message: err.message,
     });
 });
