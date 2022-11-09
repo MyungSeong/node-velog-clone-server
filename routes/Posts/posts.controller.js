@@ -7,7 +7,7 @@ import PostService from './posts.service';
 
 const router = express.Router();
 
-router.post('/insertpost', async (req, res, next) => {
+router.post('/create-post', async (req, res, next) => {
     try {
         const resultData = await PostService.insertPosts(req.body);
         /* 
@@ -47,7 +47,7 @@ router.post('/insertpost', async (req, res, next) => {
     } catch (error) {
         logger.error(error.message);
 
-        res.status(400).send({
+        return res.status(400).send({
             status: 400,
             message: error.message,
         });
@@ -68,7 +68,7 @@ router.get('/', async (req, res, next) => {
     } catch (error) {
         logger.error(error.message);
 
-        res.status(400).send({
+        return res.status(400).send({
             status: 400,
             message: error.message,
         });
@@ -89,14 +89,14 @@ router.get('/:id', async (req, res, next) => {
     } catch (error) {
         logger.error(error.message);
 
-        res.status(400).send({
+        return res.status(400).send({
             status: 400,
             message: error.message,
         });
     }
 });
 
-router.put('/updatepost', async (req, res, next) => {
+router.put('/:id', async (req, res, next) => {
     try {
     } catch (error) {}
 });

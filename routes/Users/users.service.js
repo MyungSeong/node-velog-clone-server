@@ -24,7 +24,7 @@ export default {
 
             return result;
         } catch (error) {
-            if (error.message.includes('Duplicate')) {
+            if (error.code === 'ER_DUP_ENTRY') {
                 throw new Error('이미 존재하는 데이터입니다');
             } else {
                 throw error;

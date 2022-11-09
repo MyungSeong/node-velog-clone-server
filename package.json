@@ -4,7 +4,7 @@
     "private": true,
     "scripts": {
         "start": "babel-node ./bin/www",
-        "dev": "set DEBUG=express:* & nodemon --legacy-watch --verbose --inspect=0.0.0.0:9229 --exec babel-node ./bin/www",
+        "start:dev": "set DEBUG=express:* & nodemon --legacy-watch --verbose --inspect=0.0.0.0:9229 --exec babel-node ./bin/www",
         "deploy": "yarn install --frozen-lockfile && pm2 start deploy.json"
     },
     "dependencies": {

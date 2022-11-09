@@ -6,6 +6,7 @@ import redisClient from '../../db/RedisClient';
 import JWTAuthorization from '../../utils/JSONWebTokenAuthorization';
 
 import UserService from './users.service';
+import sessConfig from '../../config/SessionConfig';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.get('/', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][GETS] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -40,7 +41,7 @@ router.get('/:username', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][GET] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -59,7 +60,7 @@ router.post('/', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][INSERT] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -78,7 +79,7 @@ router.put('/', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][UPDATE] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -97,7 +98,7 @@ router.delete('/', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][DELETE] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -133,9 +134,8 @@ router.post('/login', async (req, res, next) => {
             const token = JWTAuthorization.createToken(
                 {
                     uuid: resultData.uuid,
-                    id: resultData.id,
                 },
-                '30m',
+                parseInt(sessConfig.ACCESS_KEY_EXPIRES_IN),
             );
 
             const success = await redisClient.hSet(
@@ -147,7 +147,8 @@ router.post('/login', async (req, res, next) => {
             if (success) {
                 redisClient.expireAt(
                     'velog:session',
-                    parseInt(+new Date() / 1000) + 30 * 60,
+                    parseInt(+new Date() / 1000) +
+                        parseInt(sessConfig.ACCESS_KEY_EXPIRES_IN),
                 );
             }
 
@@ -167,7 +168,7 @@ router.post('/login', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][LOGIN] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
@@ -195,7 +196,7 @@ router.delete('/logout', async (req, res, next) => {
     } catch (error) {
         logger.error(`[USERS][LOGOUT] ${error.message}`);
 
-        res.status(400).json({
+        return res.status(400).json({
             status: 400,
             message: error.message,
         });
